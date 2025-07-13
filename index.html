@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>SocialTube - Social Media Platform</title>
+     <link rel="stylesheet" href="styles.css">
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="light-theme">
+     <!-- Navigation -->
+     <nav class="navbar">
+          <div class="nav-left">
+               <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+               </button>
+               <div class="logo">
+                    <i class="fas fa-play-circle"></i>
+                    <span>SocialTube</span>
+               </div>
+               <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search videos, channels, or topics...">
+                    <button class="search-btn">
+                         <i class="fas fa-microphone"></i>
+                    </button>
+               </div>
+          </div>
+          <div class="nav-right">
+               <button class="nav-btn" id="upload-btn" title="Upload Video">
+                    <i class="fas fa-plus"></i>
+               </button>
+               <button class="nav-btn" id="camera-btn" title="Record Video">
+                    <i class="fas fa-video"></i>
+               </button>
+               <button class="nav-btn" id="notifications-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+               </button>
+               <div class="library-dropdown" id="library-dropdown">
+                    <button class="nav-btn library-btn">
+                         <i class="fas fa-folder"></i>
+                    </button>
+                    <div class="dropdown-menu library-menu">
+                         <div class="dropdown-item" data-page="history-page">
+                              <i class="fas fa-history"></i>
+                              <span>History</span>
+                         </div>
+                         <div class="dropdown-item" data-page="watch-later-page">
+                              <i class="fas fa-clock"></i>
+                              <span>Watch Later</span>
+                         </div>
+                         <div class="dropdown-item" data-page="liked-videos-page">
+                              <i class="fas fa-thumbs-up"></i>
+                              <span>Liked Videos</span>
+                         </div>
+                         <div class="dropdown-divider"></div>
+                         <div class="dropdown-item">
+                              <i class="fas fa-download"></i>
+                              <span>Downloads</span>
+                         </div>
+                         <div class="dropdown-item">
+                              <i class="fas fa-play-circle"></i>
+                              <span>Your Videos</span>
+                         </div>
+                    </div>
+               </div>
+               <div class="user-profile" id="user-profile">
+                    <img src="https://via.placeholder.com/40x40/4CAF50/FFFFFF?text=U" alt="User" id="user-avatar">
+                    <div class="dropdown-menu">
+                         <div class="dropdown-item" data-page="your-channel-page">
+                              <i class="fas fa-user"></i>
+                              <span>Your Channel</span>
+                         </div>
+                         <div class="dropdown-item" data-page="settings-page">
+                              <i class="fas fa-cog"></i>
+                              <span>Settings</span>
+                         </div>
+                         <div class="dropdown-item">
+                              <i class="fas fa-question-circle"></i>
+                              <span>Help</span>
+                         </div>
+                         <div class="dropdown-divider"></div>
+                         <div class="dropdown-item">
+                              <i class="fas fa-sign-out-alt"></i>
+                              <span>Sign Out</span>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </nav>
+
+     <!-- Upload Modal -->
+     <div class="modal" id="upload-modal">
+          <div class="modal-content upload-modal">
+               <div class="modal-header">
+                    <h2><i class="fas fa-upload"></i> Upload Video</h2>
+                    <button class="close-modal">&times;</button>
+               </div>
+               <div class="modal-body">
+                    <div class="upload-area">
+                         <i class="fas fa-cloud-upload-alt"></i>
+                         <h3>Drop video or image files here</h3>
+                         <p>or click to browse</p>
+                         <input type="file" id="file-upload" accept="video/*,image/*" multiple>
+                    </div>
+                    <div class="upload-preview" id="upload-preview"></div>
+               </div>
+               <div class="modal-footer">
+                    <button class="cancel-btn">Cancel</button>
+                    <button class="upload-submit-btn" disabled>Upload</button>
+               </div>
+          </div>
+     </div>
+
+     <!-- Camera Recording Modal -->
+     <div class="modal" id="camera-modal">
+          <div class="modal-content camera-modal">
+               <div class="modal-header">
+                    <h2><i class="fas fa-video"></i> Record Video</h2>
+                    <button class="close-modal">&times;</button>
+               </div>
+               <div class="modal-body">
+                    <div class="camera-container">
+                         <div class="camera-preview">
+                              <video id="camera-video" autoplay muted></video>
+                              <div class="camera-overlay">
+                                   <div class="live-indicator">
+                                        <span class="live-dot"></span>
+                                        <span class="live-text">LIVE</span>
+                                   </div>
+                                   <div class="recording-time" id="recording-time">00:00</div>
+                              </div>
+                         </div>
+                         <div class="camera-controls">
+                              <button class="camera-btn" id="start-recording">
+                                   <i class="fas fa-circle"></i>
+                                   <span>Start Recording</span>
+                              </button>
+                              <button class="camera-btn stop-btn" id="stop-recording" disabled>
+                                   <i class="fas fa-stop"></i>
+                                   <span>Stop Recording</span>
+                              </button>
+                              <button class="camera-btn" id="switch-camera">
+                                   <i class="fas fa-sync-alt"></i>
+                                   <span>Switch Camera</span>
+                              </button>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Custom Loader -->
+     <div class="custom-loader" id="custom-loader">
+          <div class="loader-content">
+               <div class="loader-icon">
+                    <i class="fas fa-play-circle"></i>
+               </div>
+               <div class="loader-line"></div>
+               <div class="loader-text">Loading...</div>
+          </div>
+     </div>
+
+     <!-- Full Screen Modal -->
+     <div class="modal" id="fullscreen-modal">
+          <div class="modal-content fullscreen-modal">
+               <div class="modal-header">
+                    <h2 id="fullscreen-title">Video Title</h2>
+                    <button class="close-modal">&times;</button>
+               </div>
+               <div class="modal-body">
+                    <div class="fullscreen-content" id="fullscreen-content"></div>
+               </div>
+          </div>
+     </div>
+
+     <!-- Main Content -->
+     <div class="main-container">
+          <!-- Sidebar -->
+          <aside class="sidebar">
+               <div class="sidebar-section">
+                    <div class="sidebar-item active" data-page="home-page">
+                         <i class="fas fa-home"></i>
+                         <span>Home</span>
+                    </div>
+                    <div class="sidebar-item" data-page="trending-page">
+                         <i class="fas fa-fire"></i>
+                         <span>Trending</span>
+                    </div>
+                    <div class="sidebar-item" data-page="subscriptions-page">
+                         <i class="fas fa-subscription"></i>
+                         <span>Subscriptions</span>
+                    </div>
+               </div>
+               <div class="sidebar-section">
+                    <h3>Library</h3>
+                    <div class="sidebar-item" data-page="history-page">
+                         <i class="fas fa-history"></i>
+                         <span>History</span>
+                    </div>
+                    <div class="sidebar-item" data-page="watch-later-page">
+                         <i class="fas fa-clock"></i>
+                         <span>Watch Later</span>
+                    </div>
+                    <div class="sidebar-item" data-page="liked-videos-page">
+                         <i class="fas fa-thumbs-up"></i>
+                         <span>Liked Videos</span>
+                    </div>
+               </div>
+               <div class="sidebar-section">
+                    <h3>Settings</h3>
+                    <div class="sidebar-item" id="settings-btn" data-page="settings-page">
+                         <i class="fas fa-cog"></i>
+                         <span>Settings</span>
+                    </div>
+                    <div class="sidebar-item" id="theme-toggle">
+                         <i class="fas fa-moon"></i>
+                         <span>Dark Mode</span>
+                    </div>
+               </div>
+          </aside>
+
+          <!-- Content Area -->
+          <main class="content">
+               <!-- Home Page -->
+               <div class="page active" id="home-page">
+                    <div class="page-header">
+                         <h1>Recommended</h1>
+                         <div class="filter-tabs">
+                              <button class="filter-btn active" data-category="all">All</button>
+                              <button class="filter-btn" data-category="music">Music</button>
+                              <button class="filter-btn" data-category="gaming">Gaming</button>
+                              <button class="filter-btn" data-category="news">News</button>
+                              <button class="filter-btn" data-category="sports">Sports</button>
+                         </div>
+                    </div>
+
+                    <div class="video-grid" id="home-video-grid">
+                         <!-- Videos will be loaded dynamically -->
+                    </div>
+               </div>
+
+               <!-- Your Channel Page -->
+               <div class="page" id="your-channel-page">
+                    <div class="channel-header">
+                         <div class="channel-banner">
+                              <img src="https://via.placeholder.com/1200x200/4CAF50/FFFFFF?text=Channel+Banner"
+                                   alt="Channel Banner" id="channel-banner-img">
+                         </div>
+                         <div class="channel-info">
+                              <div class="channel-avatar-large" title="Click to change channel picture">
+                                   <img src="https://via.placeholder.com/120x120/4CAF50/FFFFFF?text=U"
+                                        alt="Channel Avatar" id="channel-avatar">
+                                   <div class="channel-avatar-overlay">
+                                        <i class="fas fa-camera"></i>
+                                   </div>
+                                   <input type="file" id="channel-avatar-upload" accept="image/*"
+                                        style="display: none;">
+                              </div>
+                              <div class="channel-details">
+                                   <h1>Your Channel</h1>
+                                   <p class="channel-handle">@johndoe</p>
+                                   <p class="channel-stats">
+                                        <span id="subscriber-count">1.2K</span> subscribers •
+                                        <span id="video-count">0</span> videos
+                                   </p>
+                                   <p class="channel-description">Web developer and content creator. Sharing knowledge
+                                        and experiences.</p>
+                                   <div class="channel-actions">
+                                        <button class="customize-btn">
+                                             <i class="fas fa-edit"></i>
+                                             Customize Channel
+                                        </button>
+                                        <button class="share-btn">
+                                             <i class="fas fa-share"></i>
+                                             Share
+                                        </button>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <div class="channel-content">
+                         <div class="channel-tabs">
+                              <button class="channel-tab active" data-tab="videos">
+                                   <i class="fas fa-video"></i>
+                                   Videos
+                              </button>
+                              <button class="channel-tab" data-tab="playlists">
+                                   <i class="fas fa-list"></i>
+                                   Playlists
+                              </button>
+                              <button class="channel-tab" data-tab="about">
+                                   <i class="fas fa-info-circle"></i>
+                                   About
+                              </button>
+                         </div>
+
+                         <div class="tab-content">
+                              <!-- Videos Tab -->
+                              <div class="tab-pane active" id="videos-tab">
+                                   <div class="video-grid" id="channel-videos-grid">
+                                        <!-- Uploaded videos will appear here -->
+                                   </div>
+                                   <div class="empty-state" id="empty-videos">
+                                        <i class="fas fa-video"></i>
+                                        <h3>No videos yet</h3>
+                                        <p>Start uploading videos to your channel</p>
+                                        <button class="upload-first-btn">
+                                             <i class="fas fa-upload"></i>
+                                             Upload Your First Video
+                                        </button>
+                                   </div>
+                              </div>
+
+                              <!-- Playlists Tab -->
+                              <div class="tab-pane" id="playlists-tab">
+                                   <div class="playlists-header">
+                                        <h3>Your Playlists</h3>
+                                        <button class="create-playlist-btn" id="create-playlist-btn">
+                                             <i class="fas fa-plus"></i>
+                                             Create Playlist
+                                        </button>
+                                   </div>
+                                   <div class="playlists-container" id="playlists-container">
+                                        <div class="empty-state" id="empty-playlists">
+                                             <i class="fas fa-list"></i>
+                                             <h3>No playlists yet</h3>
+                                             <p>Create playlists to organize your videos</p>
+                                        </div>
+                                   </div>
+                              </div>
+
+                              <!-- About Tab -->
+                              <div class="tab-pane" id="about-tab">
+                                   <div class="about-section">
+                                        <div class="about-header">
+                                             <h3>Description</h3>
+                                             <button class="edit-about-btn" id="edit-description-btn">
+                                                  <i class="fas fa-edit"></i>
+                                             </button>
+                                        </div>
+                                        <p id="channel-description">Web developer and content creator. Sharing knowledge
+                                             and experiences about
+                                             web development, programming, and technology.</p>
+
+                                        <div class="about-header">
+                                             <h3>Details</h3>
+                                             <button class="edit-about-btn" id="edit-details-btn">
+                                                  <i class="fas fa-edit"></i>
+                                             </button>
+                                        </div>
+                                        <div class="channel-details-list" id="channel-details">
+                                             <div class="detail-item">
+                                                  <span class="detail-label">Joined</span>
+                                                  <span class="detail-value">January 2024</span>
+                                             </div>
+                                             <div class="detail-item">
+                                                  <span class="detail-label">Location</span>
+                                                  <span class="detail-value">Worldwide</span>
+                                             </div>
+                                             <div class="detail-item">
+                                                  <span class="detail-label">Website</span>
+                                                  <span class="detail-value">-</span>
+                                             </div>
+                                        </div>
+
+                                        <div class="about-header">
+                                             <h3>Links</h3>
+                                             <button class="edit-about-btn" id="edit-links-btn">
+                                                  <i class="fas fa-edit"></i>
+                                             </button>
+                                        </div>
+                                        <div class="channel-links" id="channel-links">
+                                             <a href="#" class="channel-link">
+                                                  <i class="fab fa-twitter"></i>
+                                                  Twitter
+                                             </a>
+                                             <a href="#" class="channel-link">
+                                                  <i class="fab fa-github"></i>
+                                                  GitHub
+                                             </a>
+                                             <a href="#" class="channel-link">
+                                                  <i class="fab fa-linkedin"></i>
+                                                  LinkedIn
+                                             </a>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Trending Page -->
+               <div class="page" id="trending-page">
+                    <div class="page-header">
+                         <h1>Trending</h1>
+                         <p>See what's popular right now</p>
+                    </div>
+                    <div class="video-grid" id="trending-video-grid">
+                         <!-- Trending videos will be loaded dynamically -->
+                    </div>
+               </div>
+
+               <!-- Subscriptions Page -->
+               <div class="page" id="subscriptions-page">
+                    <div class="page-header">
+                         <h1>Subscriptions</h1>
+                         <p>Latest videos from your subscriptions</p>
+                    </div>
+                    <div class="video-grid" id="subscriptions-video-grid">
+                         <!-- Subscription videos will be loaded dynamically -->
+                    </div>
+               </div>
+
+               <!-- History Page -->
+               <div class="page" id="history-page">
+                    <div class="page-header">
+                         <h1>History</h1>
+                         <p>Your viewing history</p>
+                    </div>
+                    <div class="history-list" id="history-list">
+                         <!-- History items will be loaded dynamically -->
+                    </div>
+               </div>
+
+               <!-- Watch Later Page -->
+               <div class="page" id="watch-later-page">
+                    <div class="page-header">
+                         <h1>Watch Later</h1>
+                         <p>Videos you've saved to watch later</p>
+                    </div>
+                    <div class="video-grid" id="watch-later-video-grid">
+                         <!-- Watch later videos will be loaded dynamically -->
+                    </div>
+               </div>
+
+               <!-- Liked Videos Page -->
+               <div class="page" id="liked-videos-page">
+                    <div class="page-header">
+                         <h1>Liked Videos</h1>
+                         <p>Videos you've liked</p>
+                    </div>
+                    <div class="video-grid" id="liked-videos-grid">
+                         <!-- Liked videos will be loaded dynamically -->
+                    </div>
+               </div>
+
+               <!-- Settings Page -->
+               <div class="page" id="settings-page">
+                    <div class="settings-container">
+                         <div class="settings-header">
+                              <h1><i class="fas fa-cog"></i> Settings</h1>
+                              <p>Customize your SocialTube experience</p>
+                         </div>
+
+                         <div class="settings-section">
+                              <h2><i class="fas fa-user"></i> Profile Settings</h2>
+                              <div class="profile-settings">
+                                   <div class="profile-avatar-section">
+                                        <div class="profile-avatar">
+                                             <img src="https://via.placeholder.com/120x120/4CAF50/FFFFFF?text=U"
+                                                  alt="Profile" id="profile-avatar">
+                                             <div class="avatar-overlay">
+                                                  <i class="fas fa-camera"></i>
+                                             </div>
+                                             <input type="file" id="avatar-upload" accept="image/*"
+                                                  style="display: none;">
+                                        </div>
+                                        <button class="change-avatar-btn" id="change-avatar-btn">Change Avatar</button>
+                                   </div>
+
+                                   <div class="profile-banner-section">
+                                        <div class="profile-banner">
+                                             <img src="https://via.placeholder.com/800x200/4CAF50/FFFFFF?text=Channel+Banner"
+                                                  alt="Channel Banner" id="profile-banner">
+                                             <div class="banner-overlay">
+                                                  <i class="fas fa-image"></i>
+                                                  <span>Change Banner</span>
+                                             </div>
+                                             <input type="file" id="banner-upload" accept="image/*"
+                                                  style="display: none;">
+                                        </div>
+                                        <button class="change-banner-btn" id="change-banner-btn">Change Banner</button>
+                                   </div>
+                                   <div class="profile-form">
+                                        <div class="form-group">
+                                             <label for="display-name">Display Name</label>
+                                             <input type="text" id="display-name" value="John Doe">
+                                        </div>
+                                        <div class="form-group">
+                                             <label for="username">Username</label>
+                                             <input type="text" id="username" value="@johndoe">
+                                        </div>
+                                        <div class="form-group">
+                                             <label for="bio">Bio</label>
+                                             <textarea id="bio" rows="3"
+                                                  placeholder="Tell us about yourself...">Web developer and content creator</textarea>
+                                        </div>
+                                        <div class="form-group">
+                                             <label for="email">Email</label>
+                                             <input type="email" id="email" value="john@example.com">
+                                        </div>
+                                        <button class="save-btn">Save Changes</button>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div class="settings-section">
+                              <h2><i class="fas fa-palette"></i> Appearance</h2>
+                              <div class="theme-settings">
+                                   <div class="theme-option" data-theme="light">
+                                        <div class="theme-preview light-theme">
+                                             <div class="preview-header"></div>
+                                             <div class="preview-content"></div>
+                                        </div>
+                                        <div class="theme-info">
+                                             <h3>Light Theme</h3>
+                                             <p>Clean and bright interface</p>
+                                        </div>
+                                        <input type="radio" name="theme" value="light" checked>
+                                   </div>
+                                   <div class="theme-option" data-theme="dark">
+                                        <div class="theme-preview dark-theme">
+                                             <div class="preview-header"></div>
+                                             <div class="preview-content"></div>
+                                        </div>
+                                        <div class="theme-info">
+                                             <h3>Dark Theme</h3>
+                                             <p>Easy on the eyes</p>
+                                        </div>
+                                        <input type="radio" name="theme" value="dark">
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div class="settings-section">
+                              <h2><i class="fas fa-shield-alt"></i> Privacy & Security</h2>
+                              <div class="privacy-settings">
+                                   <div class="setting-item">
+                                        <div class="setting-info">
+                                             <h3>Private Account</h3>
+                                             <p>Only approved followers can see your content</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                             <input type="checkbox" id="private-account">
+                                             <span class="toggle-slider"></span>
+                                        </label>
+                                   </div>
+                                   <div class="setting-item">
+                                        <div class="setting-info">
+                                             <h3>Two-Factor Authentication</h3>
+                                             <p>Add an extra layer of security</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                             <input type="checkbox" id="2fa">
+                                             <span class="toggle-slider"></span>
+                                        </label>
+                                   </div>
+                                   <div class="setting-item">
+                                        <div class="setting-info">
+                                             <h3>Email Notifications</h3>
+                                             <p>Receive updates via email</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                             <input type="checkbox" id="email-notifications" checked>
+                                             <span class="toggle-slider"></span>
+                                        </label>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div class="settings-section danger-zone">
+                              <h2><i class="fas fa-exclamation-triangle"></i> Danger Zone</h2>
+                              <div class="danger-actions">
+                                   <div class="danger-item">
+                                        <div class="danger-info">
+                                             <h3>Delete Account</h3>
+                                             <p>Permanently delete your account and all data</p>
+                                        </div>
+                                        <button class="delete-account-btn">Delete Account</button>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </main>
+     </div>
+
+     <!-- Modal for Delete Confirmation -->
+     <div class="modal" id="delete-modal">
+          <div class="modal-content">
+               <div class="modal-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Delete Account</h2>
+                    <button class="close-modal">&times;</button>
+               </div>
+               <div class="modal-body">
+                    <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                    <p>All your videos, comments, and data will be permanently removed.</p>
+               </div>
+               <div class="modal-footer">
+                    <button class="cancel-btn">Cancel</button>
+                    <button class="confirm-delete-btn">Delete Account</button>
+               </div>
+          </div>
+     </div>
+
+     <!-- Playlist Video Selector Modal -->
+     <div class="playlist-video-selector" id="playlist-video-selector">
+          <div class="playlist-video-selector-content">
+               <h3>Select Videos for Playlist</h3>
+               <div class="video-selection-list" id="video-selection-list">
+                    <!-- Videos will be loaded here -->
+               </div>
+               <div class="playlist-actions">
+                    <button class="cancel-btn" id="cancel-video-selection">Cancel</button>
+                    <button class="add-btn" id="add-videos-to-playlist">Add to Playlist</button>
+               </div>
+          </div>
+     </div>
+
+     <!-- Mobile Bottom Navigation -->
+     <nav class="mobile-nav">
+          <a href="#" class="mobile-nav-item active" data-page="home-page">
+               <i class="fas fa-home"></i>
+               <span>Home</span>
+          </a>
+          <a href="#" class="mobile-nav-item" data-page="trending-page">
+               <i class="fas fa-fire"></i>
+               <span>Trending</span>
+          </a>
+          <a href="#" class="mobile-nav-item" data-page="subscriptions-page">
+               <i class="fas fa-subscription"></i>
+               <span>Subscriptions</span>
+          </a>
+          <a href="#" class="mobile-nav-item" data-page="your-channel-page">
+               <i class="fas fa-user"></i>
+               <span>Channel</span>
+          </a>
+          <a href="#" class="mobile-nav-item library-mobile-btn">
+               <i class="fas fa-folder"></i>
+               <span>Library</span>
+          </a>
+     </nav>
+
+     <!-- Mobile Library Modal -->
+     <div class="modal" id="library-modal">
+          <div class="modal-content library-modal">
+               <div class="modal-header">
+                    <h2><i class="fas fa-folder"></i> Library</h2>
+                    <button class="close-modal">&times;</button>
+               </div>
+               <div class="modal-body">
+                    <div class="library-options">
+                         <div class="library-option" data-page="history-page">
+                              <i class="fas fa-history"></i>
+                              <span>History</span>
+                         </div>
+                         <div class="library-option" data-page="watch-later-page">
+                              <i class="fas fa-clock"></i>
+                              <span>Watch Later</span>
+                         </div>
+                         <div class="library-option" data-page="liked-videos-page">
+                              <i class="fas fa-thumbs-up"></i>
+                              <span>Liked Videos</span>
+                         </div>
+                         <div class="library-option">
+                              <i class="fas fa-download"></i>
+                              <span>Downloads</span>
+                         </div>
+                         <div class="library-option">
+                              <i class="fas fa-play-circle"></i>
+                              <span>Your Videos</span>
+                         </div>
+                    </div>
+               </div>
+          </div>
+     </div>
+
+     <script src="script.js"></script>
+</body>
+
+</html>
